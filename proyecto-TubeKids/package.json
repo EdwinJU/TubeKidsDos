@@ -1,0 +1,28 @@
+{
+  "name": "proyecto-tubekids",
+  "version": "1.0.0",
+  "description": "proyecto de api rest con nodejs para software libre",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Edwin Jimenez",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt-nodejs": "0.0.3",
+    "body-parser": "^1.18.3",
+    "connect-multiparty": "^2.1.1",
+    "express": "^4.16.3",
+    "file-system": "^2.2.2",
+    "jwt-simple": "^0.5.1",
+    "moment": "^2.22.2",
+    "mongoose": "^5.2.7",
+    "mongoose-pagination": "^1.0.0",
+    "nodemailer": "^4.6.8",
+    "path": "^0.12.7"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.3"
+  }
+}
