@@ -2,11 +2,10 @@
 
 var path = require('path');
 var fs = require('fs');
-var mongoosePaginate = require('mongoose-pagination');
 
 var Playlist = require('../models/playlist');
 
-
+//Obtiene una playlist de acuerdo a su id
 function getPlaylist(req, res){
  
 var playlistId = req.params.id;
@@ -29,6 +28,7 @@ Playlist.findById(playlistId).populate({path: 'user'}).exec((err, playlist)=>{
     }
 });
 }
+//Obtiene todas las playlist
 function getPlaylists(req, res){
 
 	Playlist.find(function(err,playlists){
@@ -44,6 +44,7 @@ function getPlaylists(req, res){
     });
 
 }
+//Guarda una playlist
 function savePlaylist(req, res){
     var playlist = new Playlist();
 
@@ -71,6 +72,7 @@ function savePlaylist(req, res){
     });
 }
 
+//Actualiza una playlist de acuerdo a su id
 function updatePlaylist(req, res){
 	var playlistId = req.params.id;
 	var update = req.body;
@@ -80,7 +82,7 @@ function updatePlaylist(req, res){
 			 res.status(500).send({message: 'Error al actualizar la playlist'});
 		}else{
 			if (!playlistUpdated) {
-				res.status(404).send({message: 'No se ha podido actualizar el usuario'});
+				res.status(404).send({message: 'No se ha podido actualizar la playlist'});
 			}else{
 				res.status(200).send({playlist: playlistUpdated});
 			}
@@ -88,6 +90,8 @@ function updatePlaylist(req, res){
 	})
 
 }
+//Elimina una playlist de acuerdo a su id
+
 
 function deletePlaylist(req, res){
 	var playlistId = req.params.id;

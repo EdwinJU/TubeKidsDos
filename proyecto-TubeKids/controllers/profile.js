@@ -1,11 +1,9 @@
 'use strict'
 
-//var fs = require('file-system');
-//var path = require('path');
 var bcrypt = require('bcrypt-nodejs');
 var Profile = require('../models/profile');
 
-
+// Crea una playlist
 function saveProfile(req, res){
 
 	var profile = new Profile();
@@ -28,12 +26,12 @@ function saveProfile(req, res){
      			profile.save((err, profileStored) => {
 					if (err) {
 
-						res.status(500).send({message: 'Error al guardar el usuario'});
+						res.status(500).send({message: 'Error al guardar el perfil'});
 					}else{
 
 						if (!profileStored) {
 
-							res.status(404).send({message: 'No se ha registrado el usuario'});
+							res.status(404).send({message: 'No se ha registrado el perfil'});
 						}else{
 
 							res.status(200).send({profile: profileStored});	
@@ -53,6 +51,7 @@ function saveProfile(req, res){
 	}
 
 }
+//Metodo para loguear
 
 function loginProfile(req, res){
 	
@@ -70,7 +69,7 @@ function loginProfile(req, res){
 		}else{
 
 			if (!profile) {
-				res.status(404).send({message: 'El usuario no existe'});
+				res.status(404).send({message: 'El perfil no existe'});
 			}else{
 				//comprobar contarseña
 				bcrypt.compare(pin, profile.pin, function(err, check){
@@ -89,6 +88,8 @@ function loginProfile(req, res){
 
 	}
  }
+ //Actualiza una perfil de acuerdo a su id
+
 
 function updateProfile(req, res){
 	var profileId = req.params.id;
@@ -96,10 +97,10 @@ function updateProfile(req, res){
 
 	Profile.findByIdAndUpdate(profileId, update, (err, profileUpdated) => {
 		if(err){
-			 res.status(500).send({message: 'Error al actualizar el usuario'});
+			 res.status(500).send({message: 'Error al actualizar el perfil'});
 		}else{
 			if (!userUpdated) {
-				res.status(404).send({message: 'No se ha podido actualizar el usuario'});
+				res.status(404).send({message: 'No se ha podido actualizar el perfil'});
 			}else{
 				res.status(200).send({profile: profileUpdated});
 			}
@@ -108,6 +109,7 @@ function updateProfile(req, res){
 
 }
 
+//Obtiene todos los perfiles
 
 function getProfiles(req, res){
 
@@ -124,6 +126,34 @@ function getProfiles(req, res){
     });
 
 }
+//Obtiene un perfil de acuerdo a su id
+
+
+function getProfile(req, res){
+ 
+    var profileId = req.params.id;
+    
+    Profile.findById(profileId).populate({path: 'user'}).exec((err, profile)=>{
+    
+        if(err){
+           res.status(500).send({message: 'Error en la peticion'});
+    
+       }else{
+           if(!profile){
+                res.status(404).send({message: 'El perfil no existe'});
+               
+    
+            }else{
+                res.status(200).send({profile});
+    
+            }
+    
+        }
+    });
+	}
+	
+//Elimina un perfil de acuerdo a su id
+
 
 function deleteProfile(req, res){
 	var profileId = req.params.id;
@@ -135,7 +165,7 @@ function deleteProfile(req, res){
 
 		}else{
 			if(!profileRemoved){
-				res.status(404).send({message: 'El usuario no ha sido eliminado'});
+				res.status(404).send({message: 'El perfil no ha sido eliminado'});
 
 
 			}else{
@@ -152,5 +182,6 @@ module.exports = {
 	loginProfile,
 	updateProfile,
 	getProfiles,
-	deleteProfile
+	deleteProfile,
+	getProfile
 };

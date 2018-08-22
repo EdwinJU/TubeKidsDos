@@ -10,6 +10,8 @@ var md_auth = require('../middlewares/authenticated');
 api.post('/register-profile',md_auth.ensureAuth, ProfileController.saveProfile);
 api.post('/login-profile', md_auth.ensureAuth, ProfileController.loginProfile);
 api.put('/update-profile/:id', md_auth.ensureAuth, ProfileController.updateProfile);
+api.get('/get-profile/:id', md_auth.ensureAuth, ProfileController.getProfile);
+
 api.get('/profiles', md_auth.ensureAuth, ProfileController.getProfiles);
 api.delete('/delete-profile/:id', md_auth.ensureAuth, ProfileController.deleteProfile);
 

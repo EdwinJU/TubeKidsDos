@@ -2,10 +2,10 @@
 
 var path = require('path');
 var fs = require('file-system');
-var mongoosePaginate = require('mongoose-pagination');
 
 var Video = require('../models/video');
 
+//Obtiene un video de acuerdo a su id
 function getVideo(req, res){
  
     var videoId = req.params.id;
@@ -28,6 +28,8 @@ function getVideo(req, res){
         }
     });
     }
+    //Obtiene todos los videos 
+
     function getVideos(req, res){
     
         Video.find(function(err,videos){
@@ -43,21 +45,20 @@ function getVideo(req, res){
         });
     
     }
+    //Crea un nuevo video con todos los parametros
     function saveVideo(req, res){
         var video = new Video();
     
         var params = req.body;
-
-        video.number = params.number;
         video.name = params.name;
         video.IsFromYoutube = params.IsFromYoutube;
         video.url_youtube = params.url_youtube;
         video.file = null;
         video.playlist = params.playlist;
-        video.playlistGe = "5b7b8d2572cc96186f9155b7";
+        video.user = params.user;
         
 
-        if (video.name != null && video.playlistGe != null && video.IsFromYoutube != null) {
+        if (video.name != null && video.IsFromYoutube != null) {
     
         video.save((err, videoStored) => {
     
@@ -81,7 +82,8 @@ function getVideo(req, res){
         res.status(200).send({message: 'Introduce todos los campos'});
     }
     }
-    
+    //Actualiza un video de acuerdo a su id
+
     function updateVideo(req, res){
         var videoId = req.params.id;
         var update = req.body;
@@ -99,6 +101,8 @@ function getVideo(req, res){
         })
     
     }
+    //Elimina un video de acuerdo a su id
+
     
     function deleteVideo(req, res){
         var videoId = req.params.id;
@@ -121,7 +125,7 @@ function getVideo(req, res){
         })
     
     }
-
+//Actualiza el video para agregarle un archivo local
     function uploadFile(req, res){
 	var videoId = req.params.id;
 	var file_name = 'No subido';
@@ -178,6 +182,8 @@ function updateVideo(req, res){
 
 }
 
+//Obtiene el video 
+
 function getVideoFile(req, res){
  
  var videoFile = req.params.videoFile;
@@ -187,7 +193,7 @@ function getVideoFile(req, res){
  if(!err){
    res.sendFile(path.resolve(path_file));
  }else{
-   res.status(200).send({ message: 'No existe la imagen' });
+   res.status(200).send({ message: 'No existe el video' });
  }
  
  }); 

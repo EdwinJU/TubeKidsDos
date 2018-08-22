@@ -1,27 +1,22 @@
 'use strict'
 
-//var fs = require('file-system');
-//var path = require('path');
+
 var bcrypt = require('bcrypt-nodejs');
 var User = require('../models/user');
 
 var jwt = require('../services/jwt');
 var nodemailer = require('nodemailer');
 
-var mongoseePaginate = require('mongoose-pagination');
+var moment = require('moment');
 
 
-function pruebas(req, res){
-	res.status(200).send({
-		message: 'Probando una accion del controlador de usuarios del api rest con node y mongo'
-	});
-}
-
+//Crea un usuario
 function saveUser(req, res){
 
 	var user = new User();
 
 	var params = req.body;
+	var po= req.body.birthdate;
 
     console.log(params);
 
@@ -31,18 +26,27 @@ function saveUser(req, res){
     user.birthdate = params.birthdate;
 	user.country = params.country;
 	user.user_type="ROLE_ADMIN";
+
+	console.log(po);
+
+
 	if (params.password) {
 		//encriptar contraseña y guardar datos
 		bcrypt.hash(params.password, null, null, function(err, hash){
 			user.password = hash;
+
+			var m = moment(po, "MM-DD-YYYY");
+    		var edad = m.fromNow().split(" ")[0];
+    
+    		if(edad<18){
+				
+				res.status(500).send({message: 'Debes ser mayor de edad para registrarte'});
+
+        	return false
+       
+    		}else{
+
 			if (user.name != null && user.lastname != null && user.email != null) {
-
-					 //var hoy= new Date();
-					 //var edad=hoy.getFullYear() - user.birthdate.;
-
-					 //if(edad){
-
-					 //}				
 
 				//guarde usuario
      			user.save((err, userStored) => {
@@ -92,6 +96,7 @@ function saveUser(req, res){
 
 				res.status(200).send({message: 'Introduce todos los campos'});
 			}
+		}
 		});
 
 	}else{
@@ -100,6 +105,7 @@ function saveUser(req, res){
 
 }
 
+//Metodo que resive los parametros necesarios para loguearse
 function loginUser(req, res){
 	
 	var params =req.body;
@@ -143,6 +149,8 @@ function loginUser(req, res){
 
 	}
  }
+ //Actualiza un usuario de acuerdo a su id
+
 
 function updateUser(req, res){
 	var userId = req.params.id;
@@ -161,6 +169,8 @@ function updateUser(req, res){
 	})
 
 }
+//Verifica la cuenta de acuerdo a su id
+
 function userVerificated(req, res){
 	var userId = req.params.id;
 	req.body.isVerificated = true;
@@ -168,7 +178,7 @@ function userVerificated(req, res){
 
 	User.findByIdAndUpdate(userId, update, (err, userUpdated) => {
 		if(err){
-			 res.status(500).send({message: 'Error al actualizar el usuario'});
+			 res.status(500).send({message: 'Error al verificar el usuario'});
 		}else{
 			if (!userUpdated) {
 				res.status(404).send({message: 'No se ha podido actualizar el usuario'});
@@ -180,6 +190,7 @@ function userVerificated(req, res){
 
 }
 
+//Obtiene todos los usuarios 
 function getUsers(req, res){
 
 	User.find(function(err,users){
@@ -195,6 +206,7 @@ function getUsers(req, res){
     });
 
 }
+//Elimina un usuario de acuerdo a su id
 
 function deleteUser(req, res){
 	var userId = req.params.id;
@@ -218,78 +230,14 @@ function deleteUser(req, res){
 
 }
 
-//function uploadImage(req, res){
-//	var userId = req.params.id;
-//	var file_name = 'No subido';
-
-//	if (req.files) {
-//		var file_path = req.files.image.path;
-//		var file_split = file_path.split('\\');
-//		var file_name = file_split[2];
-
-//		var ext_split = file_name.split('\.');
-//		var file_ext = ext_split[1];
-
-//		if (file_ext == 'png' || file_ext == 'jpg' || file_ext == 'gif') {
-
-//			User.findByIdAndUpdate(userId, {image: file_name}, (err, userUpdated)=>{
-//				if (!userUpdated) {
-//				res.status(404).send({message: 'No se ha podido actualizar el usuario'});
-//			}else{
-//				res.status(200).send({user: userUpdated});
-//			}
-				
-//			});
-
-//		}else{
-//		   res.status(200).send({message: 'Extension del archivo no valida'});
-
-//		}
-
-//	}else{
-//		res.status(200).send({message: 'No has subido ninguna imagen '});
-//	}
-
-//}
-//NOOOOOOOOO FUNCIONAAAAAAA
-//function getImageFile(req, res){
-//	var imageFile = req.params.imageFile;
-//	var path_file ='./uploads/users'+imageFile;
-
-//	fs.exists(path_file, function(exists){
-//		if (exists){
-//			res.sendFile(path.resolve(path_file));
-//		}else{
-//			res.status(200).send({message: 'No existe la imagen'});
-
-//		}
-//	});	
-//}
-
-//function getImageFile(req, res){
- 
- //var imageFile = req.params.imageFile;
- //var path_file = './uploads/users/'+imageFile;
- 
- //fs.access(path_file, fs.constants.F_OK, (err) => {
- //if(!err){
-   //res.sendFile(path.resolve(path_file));
- //}else{
-  // res.status(200).send({ message: 'No existe la imagen' });
- //}
- 
- //}); 
-//}
 
 
 module.exports = {
-	pruebas,
 	saveUser,
 	loginUser,
 	updateUser,
 	getUsers,
 	deleteUser,
 	userVerificated
-//	uploadImage,
-//	getImageFile
+
 };
